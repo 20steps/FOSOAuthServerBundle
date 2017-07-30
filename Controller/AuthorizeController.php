@@ -11,6 +11,7 @@
 
 namespace FOS\OAuthServerBundle\Controller;
 
+use Doctrine\Entity;
 use FOS\OAuthServerBundle\Event\OAuthEvent;
 use FOS\OAuthServerBundle\Form\Handler\AuthorizeFormHandler;
 use FOS\OAuthServerBundle\Model\ClientInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Controller handling basic authorization.
@@ -60,6 +62,12 @@ class AuthorizeController implements ContainerAwareInterface
         if (!$user instanceof UserInterface) {
             throw new AccessDeniedException('This user does not have access to this section.');
         }
+	
+	    /**
+	     * @var EntityManager $em
+	     */
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $user = $em->find(get_class($user),$user->getId());
 
         if (true === $this->container->get('session')->get('_fos_oauth_server.ensure_logout')) {
             $this->container->get('session')->invalidate(600);
@@ -69,9 +77,11 @@ class AuthorizeController implements ContainerAwareInterface
         $form = $this->container->get('fos_oauth_server.authorize.form');
         $formHandler = $this->container->get('fos_oauth_server.authorize.form.handler');
 
+        $client = $this->getClient();
+        $client->setRedirectUris([$request->query->get('redirect_uri')]);
         $event = $this->container->get('event_dispatcher')->dispatch(
             OAuthEvent::PRE_AUTHORIZATION_PROCESS,
-            new OAuthEvent($user, $this->getClient())
+            new OAuthEvent($user, $client)
         );
 
         if ($event->isAuthorizedClient()) {
