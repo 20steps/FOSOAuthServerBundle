@@ -1,5 +1,5 @@
-FOSOAuthServerBundle
-====================
+FOSOAuthServerBundle (wip for Alexa Account linking)
+====================================================
 
 [![Build Status](https://secure.travis-ci.org/FriendsOfSymfony/FOSOAuthServerBundle.png)](http://travis-ci.org/FriendsOfSymfony/FOSOAuthServerBundle)
 
