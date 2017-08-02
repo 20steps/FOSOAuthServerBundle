@@ -38,10 +38,19 @@ class TokenController
      */
     public function tokenAction(Request $request)
     {
+    	$this->autoDetectLocale($request);
         try {
             return $this->server->grantAccessToken($request);
         } catch (OAuth2ServerException $e) {
             return $e->getHttpResponse();
         }
     }
+	
+	// helpers
+	
+	protected function autoDetectLocale(Request $request) {
+		$request->setLocale($request->getPreferredLanguage(['de', 'en']));
+		$this->container->get('translator')->setLocale($request->getLocale());
+		$this->container->get('router')->getContext()->setParameter('_locale', $request->getLocale());
+	}
 }

@@ -57,6 +57,7 @@ class AuthorizeController implements ContainerAwareInterface
      */
     public function authorizeAction(Request $request)
     {
+	    $this->autoDetectLocale($request);
         $user = $this->getTokenStorage()->getToken()->getUser();
 
         if (!$user instanceof UserInterface) {
@@ -203,4 +204,12 @@ class AuthorizeController implements ContainerAwareInterface
 
         return $this->container->get('security.context');
     }
+	
+	// helpers
+	
+	protected function autoDetectLocale(Request $request) {
+		$request->setLocale($request->getPreferredLanguage(['de', 'en']));
+		$this->container->get('translator')->setLocale($request->getLocale());
+		$this->container->get('router')->getContext()->setParameter('_locale', $request->getLocale());
+	}
 }
