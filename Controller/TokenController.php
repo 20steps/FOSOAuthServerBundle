@@ -69,7 +69,9 @@ class TokenController implements ContainerAwareInterface
 	
 	protected function autoDetectLocale(Request $request) {
 		$request->setLocale($request->getPreferredLanguage(['de', 'en']));
-		$this->container->get('translator')->setLocale($request->getLocale());
-		$this->container->get('router')->getContext()->setParameter('_locale', $request->getLocale());
+		if ($this->container) {
+			$this->container->get('translator')->setLocale($request->getLocale());
+			$this->container->get('router')->getContext()->setParameter('_locale', $request->getLocale());
+		}
 	}
 }
