@@ -11,11 +11,6 @@
 
 namespace FOS\OAuthServerBundle\Controller;
 
-use Doctrine\Entity;
-use FOS\OAuthServerBundle\Event\OAuthEvent;
-use FOS\OAuthServerBundle\Form\Handler\AuthorizeFormHandler;
-use FOS\OAuthServerBundle\Model\ClientInterface;
-use OAuth2\OAuth2ServerException;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +18,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
+
 use Doctrine\ORM\EntityManager;
+use Doctrine\Entity;
+
+use OAuth2\OAuth2ServerException;
+
+use FOS\OAuthServerBundle\Event\OAuthEvent;
+use FOS\OAuthServerBundle\Form\Handler\AuthorizeFormHandler;
+use FOS\OAuthServerBundle\Model\ClientInterface;
+
 
 /**
  * Controller handling basic authorization.

@@ -11,19 +11,38 @@
 
 namespace FOS\OAuthServerBundle\Controller;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use OAuth2\OAuth2;
-use OAuth2\OAuth2ServerException;
 use Symfony\Component\HttpFoundation\Response;
 
-class TokenController
+use OAuth2\OAuth2;
+use OAuth2\OAuth2ServerException;
+
+class TokenController implements ContainerAwareInterface
 {
     /**
      * @var OAuth2
      */
     protected $server;
+	
+	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
+	
+	/**
+	 * Sets the container.
+	 *
+	 * @param ContainerInterface|null $container A ContainerInterface instance or null
+	 */
+	public function setContainer(ContainerInterface $container = null)
+	{
+		$this->container = $container;
+	}
 
-    /**
+	
+	/**
      * @param OAuth2 $server
      */
     public function __construct(OAuth2 $server)
