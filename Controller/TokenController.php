@@ -58,6 +58,12 @@ class TokenController implements ContainerAwareInterface
     public function tokenAction(Request $request)
     {
     	$this->autoDetectLocale($request);
+    	
+    	if ($request->request->get('grant_type')=='urn:ietf:params:oauth:grant-type:jwt-bearer') {
+		    // spoof client id
+    		$request->request->set('client_id','4_35h577zurhk488o0488840gw844ck0wogskc4cocw408kkgkgc');
+		    $request->request->set('client_secret','FAohx4juQpWU9VzD1nZEBpNc');
+	    }
         try {
             return $this->server->grantAccessToken($request);
         } catch (OAuth2ServerException $e) {
