@@ -71,7 +71,7 @@ class TokenController implements ContainerAwareInterface
             $this->getLogger()->debug('token response: '.$response->getContent());
             return $response;
         } catch (OAuth2ServerException $e) {
-	        $this->getLogger()->error('token error: '.$e->getMessage());
+	        $this->getLogger()->debug('token error: '.$e->getMessage());
             return $e->getHttpResponse();
         }
     }
