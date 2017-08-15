@@ -16,6 +16,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Monolog\Logger;
+
 use OAuth2\OAuth2;
 use OAuth2\OAuth2ServerException;
 
@@ -58,15 +60,17 @@ class TokenController implements ContainerAwareInterface
     public function tokenAction(Request $request)
     {
     	$this->autoDetectLocale($request);
-    	
-    	if ($request->request->get('grant_type')=='urn:ietf:params:oauth:grant-type:jwt-bearer') {
+	
+	    if ($request->request->get('grant_type')=='urn:ietf:params:oauth:grant-type:jwt-bearer') {
 		    // spoof client id
 		    $request->request->set('client_id',$this->container->getParameter('bricks_custom_twentysteps_alexa_account_linking_google_oauth2_client_id'));
 		    $request->request->set('client_secret',$this->container->getParameter('bricks_custom_twentysteps_alexa_login_google_oauth2_client_secret'));
     	}
         try {
-            return $this->server->grantAccessToken($request);
+            $response = $this->server->grantAccessToken($request);
+            $this->getLogger()->debug('token response: '.$response->getContent());
         } catch (OAuth2ServerException $e) {
+	        $this->getLogger()->error('token error: '.$e->getMessage());
             return $e->getHttpResponse();
         }
     }
@@ -79,5 +83,12 @@ class TokenController implements ContainerAwareInterface
 			$this->container->get('translator')->setLocale($request->getLocale());
 			$this->container->get('router')->getContext()->setParameter('_locale', $request->getLocale());
 		}
+	}
+	
+	/**
+	 * @return Logger
+	 */
+	protected function getLogger() {
+		return $this->container->get('monolog.logger.bricks.custom.twentysteps_alexa.oauth.jwt');
 	}
 }
